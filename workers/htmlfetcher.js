@@ -1,2 +1,11 @@
-// eventually, you'll have some code here that uses the code in `archive-helpers.js`
-// to actually download the urls you want to download.
+var archive = require('../helpers/archive-helpers.js');
+var http = require('http');
+console.log('cronjobed');
+
+var archiveUpdater = function(){
+  archive.readListOfUrls(function(url){
+    archive.downloadUrls(url, function(html){
+      archive.addUrlToArchive(html);
+    });
+  });
+}();

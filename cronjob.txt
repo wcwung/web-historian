@@ -1,0 +1,2 @@
+MAILTO=t.treffry@gmail.com
+* * * * * node web/workers/htmlfetcher.js

@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
+var http = require('http');
 
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
@@ -11,8 +12,8 @@ var _ = require('underscore');
 
 exports.paths = {
   'siteAssets' : path.join(__dirname, '../web/public'),
-  'archivedSites' : path.join(__dirname, '../archives/sites'),
-  'list' : path.join(__dirname, '../archives/sites.txt')
+  'archivedSites' : path.join(__dirname, '../web/archives/sites'),
+  'list' : path.join(__dirname, '../web/archives/sites.txt')
 };
 
 // Used for stubbing paths for jasmine tests, do not modify
@@ -25,13 +26,23 @@ exports.initialize = function(pathsObj){
 // The following function names are provided to you to suggest how you might
 // modularize your code. Keep it clean!
 
-// Web Server & Background Worker
-exports.readListOfUrls = function(){
+// Worker checks pending queue
+exports.readListOfUrls = function(callback){
+  fs.readFile(exports.paths['list'], 'utf8', function(err, data){
+    if(err) throw err;
 
+    data = data.split("\n");
+
+    _.each(data, function(url){
+      if(url.length > 0) callback(url);
+    });
+    //maybe we can delete all pending entries here
+  });
 };
 
-// Web Server
-exports.isUrlInList = function(){
+//
+exports.addUrlToArchive = function(html){
+  console.log('adding to archive');
 };
 
 // Web Server
@@ -57,6 +68,23 @@ exports.isURLArchived = function(url, callback){
   });
 };
 
-// Worker
-exports.downloadUrls = function(){
+// Worker scrape html
+exports.downloadUrls = function(url, callback){
+  http.get('http://' + url, function(res){
+    var data = '';
+    res.setEncoding('utf8');
+
+    res.on('data', function(chunk){
+      data += chunk;
+    });
+
+    res.on('error', function(e){
+      console.log('error', e);
+    });
+
+    res.on('end', function(){
+      callback(data);
+    })
+  });
+
 };
