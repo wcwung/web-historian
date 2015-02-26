@@ -25,17 +25,38 @@ exports.initialize = function(pathsObj){
 // The following function names are provided to you to suggest how you might
 // modularize your code. Keep it clean!
 
+// Web Server & Background Worker
 exports.readListOfUrls = function(){
+
 };
 
+// Web Server
 exports.isUrlInList = function(){
 };
 
-exports.addUrlToList = function(){
+// Web Server
+exports.addUrlToList = function(url){
+  fs.appendFile(exports.paths['list'], url + '\n');
 };
 
-exports.isURLArchived = function(){
+
+// Web Server
+exports.isURLArchived = function(url, callback){
+
+  //Search archive directory for url
+  fs.readdir(exports.paths['archivedSites'], function(err, files){
+    _.each(files, function(element){
+
+      if( url === element ){
+        callback(false, path.join(exports.paths['archivedSites'], element));
+      }
+
+    });
+    callback('file does not exist');
+    exports.addUrlToList(url);
+  });
 };
 
+// Worker
 exports.downloadUrls = function(){
 };
