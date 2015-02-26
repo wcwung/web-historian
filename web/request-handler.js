@@ -25,6 +25,7 @@ var restful = {
     });
     req.on('end', function(){
       url = url.slice(4);
+      archive.isURLArchived(url);
       // res.writeHead(200, httpHelp.headers);
       // res.end();
     });
