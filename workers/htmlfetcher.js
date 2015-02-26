@@ -4,8 +4,8 @@ console.log('cronjobed');
 
 var archiveUpdater = function(){
   archive.readListOfUrls(function(url){
-    archive.downloadUrls(url, function(html){
-      archive.addUrlToArchive(html);
+    archive.downloadUrls(url, function(url, html){
+      archive.addUrlToArchive(url, html);
     });
   });
 }();

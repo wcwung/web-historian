@@ -23,10 +23,6 @@ exports.initialize = function(pathsObj){
   });
 };
 
-// The following function names are provided to you to suggest how you might
-// modularize your code. Keep it clean!
-
-// Worker checks pending queue
 exports.readListOfUrls = function(callback){
   fs.readFile(exports.paths['list'], 'utf8', function(err, data){
     if(err) throw err;
@@ -36,29 +32,30 @@ exports.readListOfUrls = function(callback){
     _.each(data, function(url){
       if(url.length > 0) callback(url);
     });
-    //maybe we can delete all pending entries here
+
+    var file = fs.openSync(exports.paths['list'], "w");
+    fs.closeSync(file);
   });
 };
 
-//
-exports.addUrlToArchive = function(html){
-  console.log('adding to archive');
+exports.addUrlToArchive = function(url, html){
+  fs.writeFile(exports.paths['archivedSites'] + '/' + url + '.html', html, function(e){
+    if(e) console.log('file not written', e);
+    else console.log('file was written');
+  });
 };
 
-// Web Server
 exports.addUrlToList = function(url){
   fs.appendFile(exports.paths['list'], url + '\n');
 };
 
 
-// Web Server
 exports.isURLArchived = function(url, callback){
 
-  //Search archive directory for url
   fs.readdir(exports.paths['archivedSites'], function(err, files){
-    _.each(files, function(element){
+    _.each(files, function(element, index){
 
-      if( url === element ){
+      if( url + '.html' === element ){
         callback(false, path.join(exports.paths['archivedSites'], element));
       }
 
@@ -68,7 +65,6 @@ exports.isURLArchived = function(url, callback){
   });
 };
 
-// Worker scrape html
 exports.downloadUrls = function(url, callback){
   http.get('http://' + url, function(res){
     var data = '';
@@ -83,7 +79,7 @@ exports.downloadUrls = function(url, callback){
     });
 
     res.on('end', function(){
-      callback(data);
+      callback(url, data);
     })
   });
 

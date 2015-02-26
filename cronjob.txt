@@ -1,2 +1,1 @@
-MAILTO=t.treffry@gmail.com
-* * * * * node web/workers/htmlfetcher.js
+*/1 * * * * /Users/HR10/.nvm/v0.10.25/bin/node /Users/HR10/Desktop/web-historian/workers/htmlfetcher.js
