@@ -2,40 +2,40 @@ var path = require('path');
 var archive = require('../helpers/archive-helpers');
 var httpHelp = require('./http-helpers.js');
 var fs = require('fs');
-// require more modules/folders here!
+
 
 var serving = {
     'index.html': './public/index.html',
     'loading.html': './public/loading.html'
   };
 
-var restful = {
+var routes = {
   'POST': function(req, res) {
     var url = '';
+
     req.on('data', function(chunk){
       url += chunk;
-      // Check archive and pass a call back to it.
-        // Serve the data it returns from the callback
-      // httpHelp.serveAssets(res, serving['loading.html'] /*, callback*/);
     });
+
     req.on('error', function(e){
-      console.log('there was an error:', e.message);
       res.writeHead(404, httpHelp.headers);
       res.end();
     });
+
     req.on('end', function(){
       url = url.slice(4);
-      archive.isURLArchived(url, function(err, path){
-        console.log(path);
-      });
 
-      res.writeHead(200, httpHelp.headers);
-      res.end();
+      archive.isURLArchived(url, function(err, path){
+        path = path || serving['loading.html'];
+        httpHelp.serveAssets(res, path);
+      });
     });
   },
+
   'GET': function(req, res) {
     httpHelp.serveAssets(res, serving['index.html'] /*, callback*/);
   },
+
   'OPTIONS': function(req, res) {
     res.writeHead(200, httpHelp.headers);
     res.end();
@@ -43,7 +43,5 @@ var restful = {
 }
 
 exports.handleRequest = function (req, res) {
-  console.log("Current request method:", req.method);
-  restful[req.method](req, res);
-
+  routes[req.method](req, res);
 };
